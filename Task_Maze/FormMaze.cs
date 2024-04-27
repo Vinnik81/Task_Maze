@@ -246,7 +246,7 @@ namespace Task_Maze
             }
             else
             {
-                MessageBox.Show("Путь не существует!");
+                MessageBox.Show("Пути не существует!");
             }
         }
     }
