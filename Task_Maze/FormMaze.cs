@@ -22,6 +22,7 @@ namespace Task_Maze
         private Point endPoint;
         private bool[,] maze;
         private bool isGenerating = false;
+        private List<Point> shortestPath;
 
         public FormMaze()
         {
@@ -165,10 +166,13 @@ namespace Task_Maze
 
         private void pictureBoxMaze_Paint(object sender, PaintEventArgs e)
         {
+            Graphics g = e.Graphics;
+            
+
             if (maze == null)
                 return;
 
-            Graphics g = e.Graphics;
+            
 
             for (int x = 0; x < width; x++)
             {
@@ -184,6 +188,19 @@ namespace Task_Maze
             g.FillEllipse(Brushes.Green, startPoint.X * CellSize, startPoint.Y * CellSize, CellSize, CellSize);
             g.FillEllipse(Brushes.Red, endPoint.X * CellSize, endPoint.Y * CellSize, CellSize, CellSize);
 
+            if (shortestPath != null)
+            {
+
+                Pen pen = new Pen(Color.Red, 5);
+
+                for (int i = 0; i < shortestPath.Count - 1; i++)
+                {
+                    Point p1 = shortestPath[i];
+                    Point p2 = shortestPath[i + 1];
+                    g.DrawLine(pen, p1.X * CellSize + CellSize / 2, p1.Y * CellSize + CellSize / 2, p2.X * CellSize + CellSize / 2, p2.Y * CellSize + CellSize / 2);
+                }
+                pen.Dispose();
+            }
         }
 
         private void pictureBoxMaze_MouseClick(object sender, MouseEventArgs e)
@@ -222,7 +239,7 @@ namespace Task_Maze
             if (isGenerating || maze[x, y])
                 return;
 
-            List<Point> shortestPath = await Task.Run(() => FindShortestPath(startPoint, currentPoint));
+            shortestPath = await Task.Run(() => FindShortestPath(startPoint, currentPoint));
             //List<Point> shortestPath = FindShortestPath(startPoint, currentPoint);
 
             if (shortestPath != null)
@@ -231,18 +248,18 @@ namespace Task_Maze
                 // Очистить предыдущий кратчайший путь (если есть)
                 pictureBoxMaze.Invalidate();
 
-                Graphics g = pictureBoxMaze.CreateGraphics();
-                Pen pen = new Pen(Color.Red, 5);
+                //Graphics g = pictureBoxMaze.CreateGraphics();
+                //Pen pen = new Pen(Color.Red, 5);
 
-                for (int i = 0; i < shortestPath.Count - 1; i++)
-                {
-                    Point p1 = shortestPath[i];
-                    Point p2 = shortestPath[i + 1];
-                    g.DrawLine(pen, p1.X * CellSize + CellSize / 2, p1.Y * CellSize + CellSize / 2, p2.X * CellSize + CellSize / 2, p2.Y * CellSize + CellSize / 2);
-                }
+                //for (int i = 0; i < shortestPath.Count - 1; i++)
+                //{
+                //    Point p1 = shortestPath[i];
+                //    Point p2 = shortestPath[i + 1];
+                //    g.DrawLine(pen, p1.X * CellSize + CellSize / 2, p1.Y * CellSize + CellSize / 2, p2.X * CellSize + CellSize / 2, p2.Y * CellSize + CellSize / 2);
+                //}
 
-                pen.Dispose();
-                g.Dispose();
+                //pen.Dispose();
+                //g.Dispose();
             }
             else
             {
